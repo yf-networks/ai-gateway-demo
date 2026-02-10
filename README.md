@@ -1,4 +1,4 @@
-English | [简体中文](./README-CN.md)
+English | [简体中文](./README_CN.md)
 
 # AI Gateway Kubernetes Deployment Example
 
@@ -6,10 +6,10 @@ English | [简体中文](./README-CN.md)
 
 ![BFE Kubernetes](./.images/ai-gateway-k8s.png)
 
-This example demonstrates several key components and their interactions in the `ai-gateway-system` namespace:
-- Data plane (bfe with conf-agent): traffic forwarding and access control
-- Control plane (ai-gateway-api): configuration/policy delivery API
-- Base dependencies (MySQL, Redis): storage and dependency services for the control plane
+This example demonstrates the interaction of several key components in the `ai-gateway-system` namespace:
+- Data plane (bfe with conf-agent): handles traffic forwarding and access control
+- Control plane (ai-gateway-api): provides configuration/policy delivery API
+- Base dependencies (MySQL, Redis): provide storage and dependency services for the control plane
 - Service discovery (service-controller): discovers and syncs backend services
 - Demo service (whoami): used to validate routing
 - Components communicate via Kubernetes Service/DNS, for example:
@@ -18,23 +18,23 @@ This example demonstrates several key components and their interactions in the `
   - redis.ai-gateway-system.svc.cluster.local
 
 Notes:
-- MySQL / Redis use `emptyDir` storage in this example and data can be lost after Pod restarts.
-- This is primarily for demo/connectivity validation and is not production-ready.
+- MySQL / Redis use `emptyDir` for storage in this example and data will be lost on Pod restart
+- This example is for demo/connectivity validation and is not production-ready
 
-📖 **[Build Guide](./BUILD-GUIDE-CN.md)**: Complete guide from source compilation to Docker image building and Kubernetes deployment
+📖 **[Build Guide](./BUILD_GUIDE.md)**: Complete guide from source compilation to Docker image building and Kubernetes deployment
 
-Main files:
+Main files (directory ./kubernetes):
 
 | **File** | **Description** |
 |---|---|
 | `namespace.yaml` | Namespace definition (ai-gateway-system) |
 | `kustomization.yaml` | Kustomize resource aggregation and enable/disable options |
-| `bfe-configmap.yaml` | BFE configuration (bfe.conf, conf-agent.toml, etc.) |
-| `bfe-deploy.yaml` | BFE data plane Deployment manifest |
-| `ai-gateway-configmap.yaml` | AI Gateway API configuration (DB/Redis connection, auth example) |
-| `ai-gateway-deploy.yaml` | AI Gateway API Deployment/Service manifest |
-| `mysql-deploy.yaml` | MySQL Deployment (demo database and storage config) |
-| `redis-deploy.yaml` | Redis Deployment/Service (demo cache config) |
+| `bfe-configmap.yaml` | bfe configuration (bfe.conf, conf-agent.toml, etc.) |
+| `bfe-deploy.yaml` | bfe data plane Deployment manifest |
+| `ai-gateway-configmap.yaml` | ai-gateway-api configuration (DB/Redis connection, auth example) |
+| `ai-gateway-deploy.yaml` | ai-gateway-api Deployment/Service manifest |
+| `mysql-deploy.yaml` | MySQL Deployment (example database and storage config) |
+| `redis-deploy.yaml` | Redis Deployment/Service (example cache config) |
 | `service-controller-deploy.yaml` | Service discovery controller Deployment manifest |
 | `whoami-deploy.yaml` | whoami demo service Deployment manifest |
 
@@ -46,8 +46,8 @@ Main files:
 
 ## Quick Start
 
-This README provides the shortest path to get started. For complete source compilation, image building, and Kubernetes deployment, see:
-📖 **[Build Guide](./BUILD-GUIDE-CN.md)**
+This README provides only the shortest path to get started. For complete source compilation, image building, and Kubernetes deployment, see:
+📖 **[Build Guide](./BUILD_GUIDE.md)**
 
 ### 1) Configure Images (Optional)
 
@@ -69,11 +69,10 @@ images:
 ### 2) One-Command Deployment
 
 ```bash
-cd kubernetes
-kubectl apply -k .
+kubectl apply -k kubernetes 
 ```
 
-This deploys: bfe (with conf-agent), ai-gateway-api (with Dashboard), mysql, redis, service-controller.
+This command deploys: bfe (with conf-agent), ai-gateway-api (with Dashboard), mysql, redis, service-controller.
 
 ### 3) Deploy Test Service (Optional)
 
@@ -116,160 +115,75 @@ If you encounter problems or have suggestions:
 
 ## References
 
-- Build and Deployment Complete Guide: [BUILD-GUIDE-CN.md](./BUILD-GUIDE-CN.md)
+- Build and Deployment Complete Guide: [BUILD_GUIDE.md](./BUILD_GUIDE.md) / [BUILD_GUIDE_CN.md](./BUILD_GUIDE_CN.md)
 - BFE Project: https://github.com/bfenetworks/bfe
 - AI Gateway API: https://github.com/yf-networks/ai-gateway-api
 - Service Controller: https://github.com/bfenetworks/service-controller
 - Dashboard Frontend: https://github.com/yf-networks/ai-gateway-web
 - Kubernetes Documentation: https://kubernetes.io/docs/
 
-## Quick Start
 
-This README provides the shortest path to get started. For complete source compilation, image building, and Kubernetes deployment, see:
-📖 **[Build Guide](./BUILD-GUIDE-CN.md)**
+---------
 
-### 1) Configure Images (Optional)
+## Contributions and Feedback
 
-To replace image addresses or versions, modify `images:` in `kustomization.yaml`:
+We welcome improvements and issue reports for this document.
 
-```yaml
-images:
-  - name: bfenetworks/bfe
-    newName: ghcr.io/your-org/bfe
-    newTag: v1.8.0
-  - name: ai-gateway-api
-    newName: ghcr.io/your-org/ai-gateway-api
-    newTag: latest
-  - name: bfenetworks/service-controller
-    newName: ghcr.io/your-org/service-controller
-    newTag: latest
-```
+- BFE Issues: https://github.com/bfenetworks/bfe/issues
+- Service Controller Issues: https://github.com/bfenetworks/service-controller/issues
+- AI Gateway API Issues: https://github.com/yf-networks/ai-gateway-api/issues
 
-### 2) One-Command Deployment
+### Report Documentation Issues
 
-```bash
-cd kubernetes
-kubectl apply -k .
-```
+If you encounter any of the following, please report via GitHub Issue:
 
-This deploys: bfe (with conf-agent), ai-gateway-api (with Dashboard), mysql, redis, service-controller.
+- **Technical errors**: command failures, incorrect parameters
+- **Missing content**: missing steps or required details
+- **Unclear descriptions**: ambiguous or hard-to-understand text
+- **Broken links**: inaccessible external references
 
-### 3) Deploy Test Service (Optional)
+**Steps to submit an Issue**:
 
-```bash
-kubectl apply -f kubernetes/whoami-deploy.yaml
-```
+1. Visit the repository: https://github.com/yf-networks/ai-gateway-demo
+2. Go to the **Issues** tab
+3. Click **New Issue**
+4. Use the title format: `[BUILD-GUIDE] Short issue description`
+5. Include:
+  - The section where the issue appears (e.g., "BFE Build - Image Build")
+  - Detailed description
+  - Full error logs (if applicable)
+  - Your OS and tool versions
 
-> whoami is deployed in the `default` namespace; to replace the image, edit `whoami-deploy.yaml` directly.
+### Submit Improvements
 
-### 4) Quick Validation
+If you have ideas to improve the guide, please contribute via Issue or Pull Request:
 
-```bash
-kubectl get pods -n ai-gateway-system
-kubectl get svc -n ai-gateway-system
-```
+- **Add best practices**: optimizations you discovered in practice
+- **Add example scenarios**: more real-world configuration examples
+- **Improve wording**: clearer and more concise explanations
+- **Add new sections**: content you think should be included
 
-Access Dashboard (default username/password: admin/admin):
+**Steps to submit a Pull Request**:
 
-```
-http://{NodeIP}:30183
-```
+1. Fork the repository to your GitHub account
+2. Clone your fork locally
+3. Create a feature branch: `git checkout -b feature/improve-build-guide`
+4. Edit BUILD_GUIDE.md / BUILD_GUIDE_CN.md (as needed)
+5. Commit changes: `git commit -s -m "docs: improve build guide"`
+6. Push to your fork: `git push origin feature/improve-build-guide`
+7. Create a Pull Request on GitHub
+8. Describe what you changed and why in the PR
 
-## Common Operations
+### Documentation Principles
 
-### Cleanup Deployment
+Please follow these principles when contributing:
 
-```bash
-kubectl delete -f kubernetes/whoami-deploy.yaml
-kubectl delete -k kubernetes/
-```
+- **Documentation-First**: keep bilingual support in mind
+- **Demo-Focused Clarity**: keep steps clear and verifiable
+- **Production-Ready Warnings**: clearly mark production considerations
 
-> Recommended: delete whoami first, then `ai-gateway-system` to avoid finalizers causing hang.
+### Contact
 
-## Submit Issues
-
-If you encounter problems or have suggestions:
-
-- Entry: https://github.com/yf-networks/ai-gateway-demo/issues
-- Please include: environment info, reproduction steps, error logs, expected behavior
-
-## References
-
-- Build and Deployment Complete Guide: [BUILD-GUIDE-CN.md](./BUILD-GUIDE-CN.md)
-- BFE Project: https://github.com/bfenetworks/bfe
-- AI Gateway API: https://github.com/yf-networks/ai-gateway-api
-- Service Controller: https://github.com/bfenetworks/service-controller
-- Dashboard Frontend: https://github.com/yf-networks/ai-gateway-web
-- Kubernetes Documentation: https://kubernetes.io/docs/
-
-To locate remaining resources (example):
-
-```bash
-kubectl api-resources --verbs=list --namespaced -o name \
-  | xargs -n 1 kubectl get -n ai-gateway-system --ignore-not-found --show-kind --no-headers
-```
-
-If you confirm it is safe to force cleanup, you can remove namespace finalizers (use with care):
-
-```bash
-kubectl patch ns ai-gateway-system --type=merge -p '{"spec":{"finalizers":[]}}'
-```
-
-- Delete individual resources (optional):
-
-```bash
-# bfe 
-kubectl -n ai-gateway-system delete -f service-controller-deploy.yaml
-kubectl -n ai-gateway-system delete -f ai-gateway-deploy.yaml
-kubectl -n ai-gateway-system delete -f ai-gateway-configmap.yaml
-kubectl -n ai-gateway-system delete -f mysql-deploy.yaml
-kubectl -n ai-gateway-system delete -f redis-deploy.yaml
-kubectl -n ai-gateway-system delete -f bfe-deploy.yaml
-kubectl -n ai-gateway-system delete -f bfe-configmap.yaml
-
-# whoami
-kubectl delete -f whoami-deploy.yaml
-```
-
-## Restart
-
-In this example, MySQL/Redis Pods use `emptyDir`, and data may be lost on restart.
-If you want to keep the existing database while updating other Pods (e.g. after changing configs and running `kubectl apply -k .`), you can temporarily comment out or remove `mysql-deploy.yaml` (and optionally `redis-deploy.yaml`) from `kustomization.yaml`, then run `kubectl apply -k .`.
-
-## Key configurations
-
-### Data plane (bfe)
-
-- Image: override via `images:` in `kustomization.yaml`. Use a pinned tag.
-
-- Config mounts: `bfe-configmap.yaml` includes bfe.conf and conf-agent.toml. Make sure the mount paths match the paths referenced in your configs.
-
-- Monitoring port: the example exposes 8421 for health/monitor endpoints. You can verify via Service or `kubectl port-forward`.
-
-- Service ports: the example exposes 8080 (NodePort 30080) for external access.
-
-### Control plane (ai-gateway-api and MySQL/Redis)
-
-- DB connection: configure `Databases.bfe_db.Addr` in `ai_gateway_api.toml` inside `ai-gateway-configmap.yaml` (example: `mysql.ai-gateway-system.svc.cluster.local:3306`).
-  - This example mixes plain text and Secret usage for passwords (MySQL root password in Secret + `Passwd` in toml). In production, use Secrets consistently and avoid plain text.
-
-- Auth token: the example token is preconfigured in `bfe-configmap.yaml` (conf-agent.toml) and `service-controller-deploy.yaml`.
-  - Use Secrets / short-lived / dynamically managed credentials in production.
-  - In production, create tokens in the dashboard: https://github.com/yf-networks/ai-gateway-web/tree/develop
-
-- MySQL storage: `mysql-deploy.yaml` uses an `emptyDir` volume for convenience. Data will be lost after Pod restart, not suitable for production.
-  - In production, use PV/PVC with a StorageClass and a backup strategy.
-
-- MySQL initialization: the example uses a Job to run `db_ddl.sql` to initialize schema. ai-gateway-api waits for tables in `open_bfe` via an initContainer before starting.
-  - If startup is slow in your environment, increase `startupProbe` tolerances in `mysql-deploy.yaml` (e.g. bump `failureThreshold`).
-
-- See also: [dashboard](https://github.com/yf-networks/ai-gateway-web/tree/develop)
-
-### Service discovery (service-controller and whoami)
-
-- Discovery rules: `service-controller-deploy.yaml` `args` / `env` define discovery strategy, label selectors, and API server address. Adjust to match your service labels/annotations.
-
-- whoami ports: the container listens on port 80, while the Service exposes port 8080 (targetPort=80).
-
-- See also: [service-controller](https://github.com/bfenetworks/service-controller/blob/main/README.md)
-
+- **Repository**: https://github.com/yf-networks/ai-gateway-demo
+- **Issue Tracker**: https://github.com/yf-networks/ai-gateway-demo/issues
+- **Email**: liangchuan@yf-networks.com 
