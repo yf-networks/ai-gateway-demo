@@ -1,6 +1,6 @@
-# AI Gateway Kubernetes Deployment Example (BFE + AI Gateway API)
+English|[简体中文](./README-CN.md)
 
-**Language**: English | [简体中文](./README-CN.md)
+# AI Gateway Kubernetes Deployment Example
 
 ## Overview
 
@@ -20,6 +20,8 @@ This example deploys several key components and demonstrates how they work toget
 Notes:
 - MySQL / Redis use `emptyDir` storage in this example and data can be lost after Pod restarts.
 - This is primarily for demo/connectivity validation and is not production-ready.
+
+📖 **[Build Guide](./BUILD-GUIDE-CN.md)**: Complete guide from source compilation to Docker image building and Kubernetes deployment
 
 Main files:
 

@@ -21,6 +21,7 @@
 - 示例中的 MySQL / Redis 使用 `emptyDir` 作为存储，会随 Pod 重启丢失数据；
 - 本示例偏向演示与联通性验证，不能直接用于生产环境。
 
+📖 **[编译指南](./BUILD-GUIDE-CN.md)**：从源代码编译到 Docker 镜像构建再到 Kubernetes 部署的完整指南
 
 主要文件概览：
 
