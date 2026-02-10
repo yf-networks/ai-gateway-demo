@@ -1,4 +1,4 @@
-English|[简体中文](./README-CN.md)
+English | [简体中文](./README-CN.md)
 
 # AI Gateway Kubernetes Deployment Example
 
@@ -6,8 +6,8 @@ English|[简体中文](./README-CN.md)
 
 ![BFE Kubernetes](./.images/ai-gateway-k8s.png)
 
-This example deploys several key components and demonstrates how they work together in the `ai-gateway-system` namespace:
-- Data plane (bfe and conf-agent): traffic forwarding and access control
+This example demonstrates several key components and their interactions in the `ai-gateway-system` namespace:
+- Data plane (bfe with conf-agent): traffic forwarding and access control
 - Control plane (ai-gateway-api): configuration/policy delivery API
 - Base dependencies (MySQL, Redis): storage and dependency services for the control plane
 - Service discovery (service-controller): discovers and syncs backend services
@@ -27,162 +27,180 @@ Main files:
 
 | **File** | **Description** |
 |---|---|
-| `namespace.yaml` | Namespace definition (`ai-gateway-system`) |
-| `kustomization.yaml` | Kustomize resource set and image overrides |
-| `bfe-configmap.yaml` | bfe configuration (bfe.conf, conf-agent.toml, etc.) |
-| `bfe-deploy.yaml` | bfe data plane Deployment |
-| `ai-gateway-configmap.yaml` | ai-gateway-api configuration (DB/Redis connection, auth example) |
-| `ai-gateway-deploy.yaml` | ai-gateway-api Deployment/Service |
-| `mysql-deploy.yaml` | MySQL Deployment (demo DB + storage config) |
+| `namespace.yaml` | Namespace definition (ai-gateway-system) |
+| `kustomization.yaml` | Kustomize resource aggregation and enable/disable options |
+| `bfe-configmap.yaml` | BFE configuration (bfe.conf, conf-agent.toml, etc.) |
+| `bfe-deploy.yaml` | BFE data plane Deployment manifest |
+| `ai-gateway-configmap.yaml` | AI Gateway API configuration (DB/Redis connection, auth example) |
+| `ai-gateway-deploy.yaml` | AI Gateway API Deployment/Service manifest |
+| `mysql-deploy.yaml` | MySQL Deployment (demo database and storage config) |
 | `redis-deploy.yaml` | Redis Deployment/Service (demo cache config) |
-| `service-controller-deploy.yaml` | Service discovery controller Deployment |
-| `whoami-deploy.yaml` | whoami demo service Deployment |
+| `service-controller-deploy.yaml` | Service discovery controller Deployment manifest |
+| `whoami-deploy.yaml` | whoami demo service Deployment manifest |
 
 ## Prerequisites
 
-- Version: kubectl must support `-k`
-  - Recommended: kubectl >= 1.20 (or any version that can run `kubectl apply -k .`).
+- kubectl with `-k` support (recommended kubectl >= 1.20)
+- kubectl can access the target cluster with permissions to create Namespace, Deployment, Service, ConfigMap, Secret
+- Cluster nodes can pull images (configure image acceleration or private registry credentials if needed)
 
-- Cluster permissions: kubectl can access the cluster and can create Namespace, Deployment, Service, ConfigMap, Secret, etc.
+## Quick Start
 
-- Images are pullable: make sure cluster nodes can pull the images.
-  - This example manages image names/tags via `images:` in `kustomization.yaml`. Prefer updating that in one place.
-  - If you need an image mirror/accelerator, adjust `newName` / `newTag` under `images:`.
+This README provides the shortest path to get started. For complete source compilation, image building, and Kubernetes deployment, see:
+📖 **[Build Guide](./BUILD-GUIDE-CN.md)**
 
-- Optional: if your kubectl does not embed kustomize, install kustomize or use a kubectl version with kustomize.
+### 1) Configure Images (Optional)
 
-## Deployment
-
-### Configure images
-
-All component images are centralized in `kustomization.yaml` under `images:`.
-If you hit image pull failures (e.g. ghcr is not reachable), update `newName`/`newTag` under `images:` instead of editing every `*-deploy.yaml`.
-
-Common mirror example (using `ghcr.nju.edu.cn`):
+To replace image addresses or versions, modify `images:` in `kustomization.yaml`:
 
 ```yaml
 images:
-  - name: ghcr.io/bfenetworks/bfe
-    newName: ghcr.nju.edu.cn/bfenetworks/bfe
-    newTag: v1.8.0-debug
-
-  - name: ghcr.io/yf-networks/ai-gateway-api
-    newName: ghcr.nju.edu.cn/yf-networks/ai-gateway-api
+  - name: bfenetworks/bfe
+    newName: ghcr.io/your-org/bfe
+    newTag: v1.8.0
+  - name: ai-gateway-api
+    newName: ghcr.io/your-org/ai-gateway-api
     newTag: latest
-
-  - name: ghcr.io/bfenetworks/service-controller
-    newName: ghcr.nju.edu.cn/bfenetworks/service-controller
+  - name: bfenetworks/service-controller
+    newName: ghcr.io/your-org/service-controller
     newTag: latest
-
-  - name: ghcr.io/cc14514/mysql
-    newName: ghcr.nju.edu.cn/cc14514/mysql
-    newTag: "8"
-
-  - name: ghcr.io/cc14514/redis
-    newName: ghcr.nju.edu.cn/cc14514/redis
-    newTag: "6.2"
 ```
 
-> Tip: Prefer changing only `newName` (registry/repo prefix) and `newTag` (version). Keep `name:` consistent with the image names used in the YAML manifests.
-
-> Note: The MySQL image is used both by the MySQL Deployment and by the ai-gateway-api initContainer (which waits for the DB schema to be initialized). Keep them consistent, and ensure the image includes `mysql`/`mysqladmin` clients.
-
-### Deploy BFE stack (data plane, control plane, service discovery)
+### 2) One-Command Deployment
 
 ```bash
 cd kubernetes
 kubectl apply -k .
 ```
 
-Notes: `kubectl apply -k .` will deploy the following into the `ai-gateway-system` namespace:
-- bfe + conf-agent
-- ai-gateway-api
-- mysql + init Job
-- redis
-- service-controller
+This deploys: bfe (with conf-agent), ai-gateway-api (with Dashboard), mysql, redis, service-controller.
 
-### Deploy demo service (after BFE stack is running)
+### 3) Deploy Test Service (Optional)
+
+```bash
+kubectl apply -f kubernetes/whoami-deploy.yaml
+```
+
+> whoami is deployed in the `default` namespace; to replace the image, edit `whoami-deploy.yaml` directly.
+
+### 4) Quick Validation
+
+```bash
+kubectl get pods -n ai-gateway-system
+kubectl get svc -n ai-gateway-system
+```
+
+Access Dashboard (default username/password: admin/admin):
+
+```
+http://{NodeIP}:30183
+```
+
+## Common Operations
+
+### Cleanup Deployment
+
+```bash
+kubectl delete -f kubernetes/whoami-deploy.yaml
+kubectl delete -k kubernetes/
+```
+
+> Recommended: delete whoami first, then `ai-gateway-system` to avoid finalizers causing hang.
+
+## Submit Issues
+
+If you encounter problems or have suggestions:
+
+- Entry: https://github.com/yf-networks/ai-gateway-demo/issues
+- Please include: environment info, reproduction steps, error logs, expected behavior
+
+## References
+
+- Build and Deployment Complete Guide: [BUILD-GUIDE-CN.md](./BUILD-GUIDE-CN.md)
+- BFE Project: https://github.com/bfenetworks/bfe
+- AI Gateway API: https://github.com/yf-networks/ai-gateway-api
+- Service Controller: https://github.com/bfenetworks/service-controller
+- Dashboard Frontend: https://github.com/yf-networks/ai-gateway-web
+- Kubernetes Documentation: https://kubernetes.io/docs/
+
+## Quick Start
+
+This README provides the shortest path to get started. For complete source compilation, image building, and Kubernetes deployment, see:
+📖 **[Build Guide](./BUILD-GUIDE-CN.md)**
+
+### 1) Configure Images (Optional)
+
+To replace image addresses or versions, modify `images:` in `kustomization.yaml`:
+
+```yaml
+images:
+  - name: bfenetworks/bfe
+    newName: ghcr.io/your-org/bfe
+    newTag: v1.8.0
+  - name: ai-gateway-api
+    newName: ghcr.io/your-org/ai-gateway-api
+    newTag: latest
+  - name: bfenetworks/service-controller
+    newName: ghcr.io/your-org/service-controller
+    newTag: latest
+```
+
+### 2) One-Command Deployment
 
 ```bash
 cd kubernetes
-kubectl apply -f whoami-deploy.yaml 
+kubectl apply -k .
 ```
 
-> The whoami demo is deployed in the `default` namespace (see `whoami-deploy.yaml`) and is not part of `kubectl apply -k .`.
-> If whoami also needs to use a mirror, edit the `image:` in `whoami-deploy.yaml` directly.
+This deploys: bfe (with conf-agent), ai-gateway-api (with Dashboard), mysql, redis, service-controller.
 
-## Validation
-
-- Check namespace, pods, and services:
+### 3) Deploy Test Service (Optional)
 
 ```bash
-[root@iTM ~]# kubectl get ns ai-gateway-system
-NAME         STATUS   AGE
-ai-gateway-system   Active   29h
-
-[root@iTM ~]# kubectl -n ai-gateway-system get pods
-NAME                                      READY   STATUS    RESTARTS   AGE
-ai-gateway-api-xxxxxxxxxx-xxxxx            1/1     Running   0          29h
-bfe-85f4d45ddf-4xwdz                      1/1     Running   0          29h
-bfe-service-controller-6867d57767-92b5m   1/1     Running   0          29h
-mysql-d768d5d4d-fj4j5                     1/1     Running   0          29h
-redis-xxxxxxxxxx-xxxxx                     1/1     Running   0          29h
-
-[root@iTM ~]# kubectl -n ai-gateway-system get service
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                                        AGE
-ai-gateway-api   NodePort    10.105.122.39   <none>        8183:30183/TCP,8284/TCP                        29h
-bfe             NodePort    10.108.55.8     <none>        8080:30080/TCP,8443:30443/TCP,8421:30421/TCP   29h
-mysql           ClusterIP   None            <none>        3306/TCP                                       29h
-redis           ClusterIP   10.96.xx.yy     <none>        6379/TCP                                       29h
-[root@iTM ~]#
+kubectl apply -f kubernetes/whoami-deploy.yaml
 ```
 
-- Login dashboard:
-  - Open http://{NodeIP}:30183 in your browser
-  - Default username/password: admin/admin
+> whoami is deployed in the `default` namespace; to replace the image, edit `whoami-deploy.yaml` directly.
 
-## Cleanup
-
-- Delete demo service
+### 4) Quick Validation
 
 ```bash
-cd kubernetes
-kubectl delete -f whoami-deploy.yaml
+kubectl get pods -n ai-gateway-system
+kubectl get svc -n ai-gateway-system
 ```
 
-Recommended deletion order: delete `whoami` first, then delete `ai-gateway-system`.
-Reason: `service-controller` may add `finalizers` to whoami-related resources (typically the Service in the `default` namespace). If you delete `ai-gateway-system` first (which removes `service-controller`) and then delete whoami, the finalizer may never be removed and `kubectl delete -f whoami-deploy.yaml` may hang.
+Access Dashboard (default username/password: admin/admin):
 
-- Delete BFE stack (data plane, control plane, service discovery)
+```
+http://{NodeIP}:30183
+```
+
+## Common Operations
+
+### Cleanup Deployment
 
 ```bash
-cd kubernetes
-kubectl delete -k . 
+kubectl delete -f kubernetes/whoami-deploy.yaml
+kubectl delete -k kubernetes/
 ```
 
-Notes: `kubectl delete -k .` only deletes resources listed under `resources:` in `kustomization.yaml` (mainly components in `ai-gateway-system` + `namespace.yaml`).
-whoami is in the `default` namespace and is not part of the `-k` resource set.
+> Recommended: delete whoami first, then `ai-gateway-system` to avoid finalizers causing hang.
 
-If deleting whoami hangs (instead of `-k`), first check whether whoami resources in the `default` namespace have finalizers:
+## Submit Issues
 
-```bash
-kubectl get svc whoami -n default -o jsonpath='{.metadata.finalizers}' && echo
-kubectl get deploy whoami -n default -o jsonpath='{.metadata.finalizers}' && echo
-```
+If you encounter problems or have suggestions:
 
-If you confirm it is safe to force cleanup, you can remove whoami finalizers (use with care):
+- Entry: https://github.com/yf-networks/ai-gateway-demo/issues
+- Please include: environment info, reproduction steps, error logs, expected behavior
 
-```bash
-kubectl patch svc whoami -n default --type=merge -p '{"metadata":{"finalizers":[]}}'
-kubectl patch deploy whoami -n default --type=merge -p '{"metadata":{"finalizers":[]}}'
-```
+## References
 
-If `kubectl delete -k .` hangs (often because the `ai-gateway-system` namespace is stuck in Terminating), it usually means some resources in `ai-gateway-system` still have `finalizers`, while the responsible controller is stopped or cleanup did not complete.
-
-```bash
-kubectl describe ns ai-gateway-system
-kubectl get ns ai-gateway-system -o jsonpath='{.spec.finalizers}' && echo
-```
+- Build and Deployment Complete Guide: [BUILD-GUIDE-CN.md](./BUILD-GUIDE-CN.md)
+- BFE Project: https://github.com/bfenetworks/bfe
+- AI Gateway API: https://github.com/yf-networks/ai-gateway-api
+- Service Controller: https://github.com/bfenetworks/service-controller
+- Dashboard Frontend: https://github.com/yf-networks/ai-gateway-web
+- Kubernetes Documentation: https://kubernetes.io/docs/
 
 To locate remaining resources (example):
 
