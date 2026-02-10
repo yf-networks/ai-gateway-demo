@@ -171,6 +171,7 @@ make docker
 
 **说明**:
 - 此命令会构建 **prod（生产）** 和 **debug（调试）** 两个版本的镜像
+- 镜像包含 **BFE** 和 **conf-agent** 两个组件（配置管理代理）
 - 镜像 tag 来自仓库根目录的 `VERSION` 文件
 - tag 会自动规范化为 `v` 前缀（例如：`1.8.0` → `v1.8.0`）
 
@@ -302,9 +303,13 @@ cd ai-gateway-api
 make docker
 ```
 
+**说明**:
+- 镜像包含 **AI Gateway API** 后端服务和 **Dashboard** Web 前端界面
+- Dashboard 前端资源会在构建时自动嵌入到镜像的 `static/` 目录
+
 **关键参数**: `DASHBOARD_VERSION`（可选）
 
-指定控制面 Dashboard 前端资源的版本（来自 [yf-networks/ai-gateway-web](https://github.com/yf-networks/ai-gateway-web) 的 release）：
+指定 Dashboard 前端资源的版本（来自 [yf-networks/ai-gateway-web](https://github.com/yf-networks/ai-gateway-web) 的 release）：
 
 ```bash
 make docker DASHBOARD_VERSION=v0.0.1
@@ -556,27 +561,42 @@ kubectl get namespace ai-gateway-demo
 
 ### 2. 更新镜像引用
 
-根据您推送的镜像地址，修改 `kubernetes/kustomization.yaml` 中的镜像配置：
+**使用您编译的镜像替换示例配置**
+
+编辑 `kubernetes/kustomization.yaml`，将示例镜像替换为您刚才编译并推送的镜像：
 
 ```yaml
 images:
+  # 1. BFE 数据面镜像（包含 conf-agent）
   - name: bfenetworks/bfe
     newName: ghcr.io/your-org/bfe        # 替换为您的镜像地址
-    newTag: v1.8.0                        # 替换为您的版本
-  - name: bfenetworks/service-controller
-    newName: ghcr.io/your-org/service-controller
-    newTag: latest
+    newTag: v1.8.0                        # 替换为您编译的版本
+  
+  # 2. AI Gateway API 控制面镜像（包含 Dashboard）
   - name: ai-gateway-api
     newName: ghcr.io/your-org/ai-gateway-api
     newTag: latest
-  - name: traefik/whoami
-    newName: traefik/whoami               # 示例应用，可保持不变
+  
+  # 3. Service Controller 服务发现组件
+  - name: bfenetworks/service-controller
+    newName: ghcr.io/your-org/service-controller
     newTag: latest
+  
+  # 4. 示例应用（可保持不变）
+  - name: traefik/whoami
+    newName: traefik/whoami
+    newTag: latest
+  
+  # 注意：Redis 镜像通常不需要修改，使用官方镜像即可
+  # 如需自定义，添加以下配置：
+  # - name: redis
+  #   newName: your-registry/redis
+  #   newTag: 7-alpine
 ```
 
-### 3. 镜像拉取凭证（私有仓库）
+### 3. 配置镜像拉取凭证（私有仓库）
 
-如果您的镜像存储在私有仓库，需要创建 `imagePullSecrets`：
+如果您的镜像存储在私有仓库，需要先创建 `imagePullSecrets`：
 
 ```bash
 kubectl create secret docker-registry ghcr-secret \
@@ -586,7 +606,7 @@ kubectl create secret docker-registry ghcr-secret \
   --namespace=ai-gateway-demo
 ```
 
-在部署清单中引用凭证（修改 `*-deploy.yaml`）：
+然后在部署清单中引用凭证（编辑 `kubernetes/*-deploy.yaml`）：
 
 ```yaml
 spec:
@@ -596,124 +616,74 @@ spec:
         - name: ghcr-secret
 ```
 
-### 4. 部署基础依赖
+### 4. 配置外部数据库（可选）
 
-#### 部署 MySQL
+**使用示例数据库（默认）**:
+- 示例配置使用集群内的 MySQL 和 Redis，数据存储在 `emptyDir`（重启后丢失）
+- 适合演示和开发环境，**不推荐生产使用**
 
-```bash
-kubectl apply -f kubernetes/mysql-deploy.yaml
+**使用外部数据库（推荐生产环境）**:
+
+如果您有独立的 MySQL/Redis 资源（如云数据库），需要修改 AI Gateway API 的数据库配置：
+
+1. **编辑 `kubernetes/ai-gateway-configmap.yaml`**，更新数据库连接信息：
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-gateway-api-config
+data:
+  database.yml: |
+    host: <your-mysql-host>           # 如 mysql.example.com
+    port: 3306
+    user: <your-mysql-user>
+    password: <your-mysql-password>
+    database: ai_gateway
+  
+  redis.yml: |
+    addr: <your-redis-host>:6379      # 如 redis.example.com:6379
+    password: <your-redis-password>
+    db: 0
 ```
 
-验证：
-```bash
-kubectl get pods -n ai-gateway-demo | grep mysql
-kubectl logs -n ai-gateway-demo <mysql-pod-name>
+2. **禁用示例数据库部署**，编辑 `kubernetes/kustomization.yaml`，注释掉数据库资源：
+
+```yaml
+resources:
+  - namespace.yaml
+  # - mysql-deploy.yaml          # 使用外部 MySQL 时注释此行
+  # - redis-deploy.yaml          # 使用外部 Redis 时注释此行
+  - bfe-configmap.yaml
+  - bfe-deploy.yaml
+  - ai-gateway-configmap.yaml
+  - ai-gateway-deploy.yaml
+  - service-controller-deploy.yaml
+  - whoami-deploy.yaml
 ```
 
-#### 部署 Redis
+### 5. 一键部署所有组件
 
-```bash
-kubectl apply -f kubernetes/redis-deploy.yaml
-```
-
-验证：
-```bash
-kubectl get pods -n ai-gateway-demo | grep redis
-```
-
-### 5. 部署核心服务
-
-#### 部署 AI Gateway API（控制面）
-
-```bash
-# 应用 ConfigMap（如需自定义配置）
-kubectl apply -f kubernetes/ai-gateway-configmap.yaml
-
-# 部署服务
-kubectl apply -f kubernetes/service-controller-deploy.yaml
-```
-
-验证：
-```bash
-# 检查 Pod 状态
-kubectl get pods -n ai-gateway-demo -l app=ai-gateway-api
-
-# 检查日志
-kubectl logs -n ai-gateway-demo -l app=ai-gateway-api -f
-
-# 端口转发测试（可选）
-kubectl port-forward -n ai-gateway-demo svc/ai-gateway-api 8183:8183
-# 访问 http://localhost:8183
-```
-
-#### 部署 BFE（数据面）
-
-```bash
-# 应用 ConfigMap
-kubectl apply -f kubernetes/bfe-configmap.yaml
-
-# 部署服务
-kubectl apply -f kubernetes/bfe-deploy.yaml
-```
-
-验证：
-```bash
-# 检查 Pod 状态
-kubectl get pods -n ai-gateway-demo -l app=bfe
-
-# 检查日志
-kubectl logs -n ai-gateway-demo -l app=bfe -f
-
-# 检查服务端口
-kubectl get svc -n ai-gateway-demo bfe
-```
-
-#### 部署 Service Controller
-
-```bash
-kubectl apply -f kubernetes/service-controller-deploy.yaml
-```
-
-验证：
-```bash
-# 检查 Pod 状态
-kubectl get pods -n ai-gateway-demo -l app=service-controller
-
-# 检查日志（确认已连接 BFE API Server）
-kubectl logs -n ai-gateway-demo -l app=service-controller -f
-```
-
-### 6. 部署测试应用
-
-部署 whoami 应用用于验证流量转发：
-
-```bash
-kubectl apply -f kubernetes/whoami-deploy.yaml
-```
-
-验证服务自动注册：
-```bash
-# 检查 whoami 服务
-kubectl get svc -n ai-gateway-demo whoami
-
-# 检查 Service Controller 日志，应显示服务注册成功
-kubectl logs -n ai-gateway-demo -l app=service-controller | grep whoami
-```
-
-### 7. 完整部署（一键部署）
-
-使用 Kustomize 一次性部署所有资源：
+执行以下命令一键部署所有组件：
 
 ```bash
 kubectl apply -k kubernetes/
 ```
 
 **说明**:
-- `-k` 参数指定使用 Kustomize 目录
-- 自动应用 `kustomization.yaml` 中的镜像替换和资源顺序
-- 确保在执行前已正确配置镜像引用
+- `-k` 参数使用 Kustomize 自动处理资源编排
+- 自动应用 `kustomization.yaml` 中的镜像替换配置
+- 按正确顺序创建所有资源（命名空间、ConfigMap、Deployment、Service 等）
 
-### 8. 验证完整部署
+**部署的资源**:
+- ✅ Namespace（ai-gateway-demo）
+- ✅ MySQL + Redis（或跳过，如使用外部数据库）
+- ✅ BFE 数据面（包含 conf-agent）
+- ✅ AI Gateway API 控制面（包含 Dashboard）
+- ✅ Service Controller 服务发现
+- ✅ whoami 测试应用
+
+### 6. 验证部署状态
 
 #### 检查所有 Pod 状态
 
