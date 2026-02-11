@@ -107,9 +107,9 @@ kubectl delete -k kubernetes/
 > 建议先删 whoami 再删 `ai-gateway-system`，避免 finalizers 导致卡住。
 
 
-## 贡献与反馈
+## 社区贡献
 
-贡献方式与问题反馈请见 [CONTRIBUTING_CN.md](./CONTRIBUTING_CN.md)（英文版见 [CONTRIBUTING.md](./CONTRIBUTING.md)）。
+贡献方式请见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 参考资料
 
