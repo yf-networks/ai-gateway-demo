@@ -106,12 +106,10 @@ kubectl delete -k kubernetes/
 
 > 建议先删 whoami 再删 `ai-gateway-system`，避免 finalizers 导致卡住。
 
-## 提交 Issue
 
-如果遇到问题或有改进建议，请提交 Issue：
+## 贡献与反馈
 
-- 入口： https://github.com/yf-networks/ai-gateway-demo/issues
-- 建议包含：环境信息、复现步骤、报错日志、期望行为
+贡献方式与问题反馈请见 [CONTRIBUTING_CN.md](./CONTRIBUTING_CN.md)（英文版见 [CONTRIBUTING.md](./CONTRIBUTING.md)）。
 
 ## 参考资料
 
@@ -121,69 +119,3 @@ kubectl delete -k kubernetes/
 - Service Controller： https://github.com/bfenetworks/service-controller
 - Dashboard 前端： https://github.com/yf-networks/ai-gateway-web
 - Kubernetes 文档： https://kubernetes.io/docs/
-
-
----------
-
-## 贡献与反馈
-
-我们非常欢迎您对本文档提出改进建议或报告问题。
-
-- BFE Issues: https://github.com/bfenetworks/bfe/issues
-- Service Controller Issues: https://github.com/bfenetworks/service-controller/issues
-- AI Gateway API Issues: https://github.com/yf-networks/ai-gateway-api/issues
-
-### 报告文档问题
-
-如果您在使用本指南过程中发现以下问题，请通过 GitHub Issue 向我们反馈：
-
-- **技术错误**: 命令执行失败、参数配置错误
-- **内容遗漏**: 缺少关键步骤或必要说明
-- **描述不清**: 说明模糊、难以理解的部分
-- **链接失效**: 无法访问的外部资源链接
-
-**提交 Issue 步骤**:
-
-1. 访问项目仓库: https://github.com/yf-networks/ai-gateway-demo
-2. 进入 **Issues** 标签页
-3. 点击 **New Issue** 创建新问题
-4. 使用标题格式: `[BUILD-GUIDE] 简短问题描述`
-5. 在描述中包含:
-   - 问题所在章节（如 "BFE 编译 - 镜像构建"）
-   - 详细的问题描述
-   - 如为命令错误，请附上完整的错误日志
-   - 您的操作系统和工具版本信息
-
-### 提交改进建议
-
-如果您有以下改进想法，欢迎通过 GitHub Issue 或 Pull Request 贡献：
-
-- **补充最佳实践**: 您在实践中总结的优化方案
-- **增加示例场景**: 更多实际应用场景的配置示例
-- **优化表述**: 让说明更清晰易懂的改写建议
-- **新增章节**: 您认为应该补充的内容
-
-**提交 Pull Request 步骤**:
-
-1. Fork 项目仓库到您的 GitHub 账号
-2. 克隆您的 Fork 仓库到本地
-3. 创建特性分支: `git checkout -b feature/improve-build-guide`
-4. 编辑 BUILD_GUIDE_CN.md 文件（假设）
-5. 提交更改: `git commit -s -m "docs: 改进 BFE 编译章节说明"`
-6. 推送到您的 Fork: `git push origin feature/improve-build-guide`
-7. 在 GitHub 上创建 Pull Request
-8. 在 PR 描述中说明您的改进内容和原因
-
-### 文档维护原则
-
-在贡献时，请遵循以下原则：
-
-- **Documentation-First**: 保持中英文双语支持的规划
-- **Demo-Focused Clarity**: 确保说明清晰、步骤可验证
-- **Production-Ready Warnings**: 明确标注生产环境注意事项
-
-### 联系方式
-
-- **项目仓库**: https://github.com/yf-networks/ai-gateway-demo
-- **Issue 追踪**: https://github.com/yf-networks/ai-gateway-demo/issues
-- **电子邮件**: liangchuan@yf-networks.com 

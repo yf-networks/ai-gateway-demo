@@ -106,12 +106,9 @@ kubectl delete -k kubernetes/
 
 > Recommended: delete whoami first, then `ai-gateway-system` to avoid finalizers causing hang.
 
-## Submit Issues
+## Contributing
 
-If you encounter problems or have suggestions:
-
-- Entry: https://github.com/yf-networks/ai-gateway-demo/issues
-- Please include: environment info, reproduction steps, error logs, expected behavior
+See [CONTRIBUTING.md](./CONTRIBUTING.md) (and [CONTRIBUTING_CN.md](./CONTRIBUTING_CN.md)) for how to report issues and submit pull requests.
 
 ## References
 
@@ -121,69 +118,3 @@ If you encounter problems or have suggestions:
 - Service Controller: https://github.com/bfenetworks/service-controller
 - Dashboard Frontend: https://github.com/yf-networks/ai-gateway-web
 - Kubernetes Documentation: https://kubernetes.io/docs/
-
-
----------
-
-## Contributions and Feedback
-
-We welcome improvements and issue reports for this document.
-
-- BFE Issues: https://github.com/bfenetworks/bfe/issues
-- Service Controller Issues: https://github.com/bfenetworks/service-controller/issues
-- AI Gateway API Issues: https://github.com/yf-networks/ai-gateway-api/issues
-
-### Report Documentation Issues
-
-If you encounter any of the following, please report via GitHub Issue:
-
-- **Technical errors**: command failures, incorrect parameters
-- **Missing content**: missing steps or required details
-- **Unclear descriptions**: ambiguous or hard-to-understand text
-- **Broken links**: inaccessible external references
-
-**Steps to submit an Issue**:
-
-1. Visit the repository: https://github.com/yf-networks/ai-gateway-demo
-2. Go to the **Issues** tab
-3. Click **New Issue**
-4. Use the title format: `[BUILD-GUIDE] Short issue description`
-5. Include:
-  - The section where the issue appears (e.g., "BFE Build - Image Build")
-  - Detailed description
-  - Full error logs (if applicable)
-  - Your OS and tool versions
-
-### Submit Improvements
-
-If you have ideas to improve the guide, please contribute via Issue or Pull Request:
-
-- **Add best practices**: optimizations you discovered in practice
-- **Add example scenarios**: more real-world configuration examples
-- **Improve wording**: clearer and more concise explanations
-- **Add new sections**: content you think should be included
-
-**Steps to submit a Pull Request**:
-
-1. Fork the repository to your GitHub account
-2. Clone your fork locally
-3. Create a feature branch: `git checkout -b feature/improve-build-guide`
-4. Edit BUILD_GUIDE.md / BUILD_GUIDE_CN.md (as needed)
-5. Commit changes: `git commit -s -m "docs: improve build guide"`
-6. Push to your fork: `git push origin feature/improve-build-guide`
-7. Create a Pull Request on GitHub
-8. Describe what you changed and why in the PR
-
-### Documentation Principles
-
-Please follow these principles when contributing:
-
-- **Documentation-First**: keep bilingual support in mind
-- **Demo-Focused Clarity**: keep steps clear and verifiable
-- **Production-Ready Warnings**: clearly mark production considerations
-
-### Contact
-
-- **Repository**: https://github.com/yf-networks/ai-gateway-demo
-- **Issue Tracker**: https://github.com/yf-networks/ai-gateway-demo/issues
-- **Email**: liangchuan@yf-networks.com 
