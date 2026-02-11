@@ -108,7 +108,7 @@ kubectl delete -k kubernetes/
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) (and [CONTRIBUTING_CN.md](./CONTRIBUTING_CN.md)) for how to report issues and submit pull requests.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to submit pull requests.
 
 ## References
 

@@ -1,66 +1,88 @@
-[English](./CONTRIBUTING.md) | [简体中文](./CONTRIBUTING_CN.md)
+# Contribute Code
 
-# Contributing
+You are welcome to contribute to the AI Gateway ecosystem.
+To contribute, you need to agree to the
+[Contributor License Agreement](https://cla-assistant.io/yf-networks/ai-gateway-demo).
 
-Thanks for helping improve this demo repo and its documentation.
+We sincerely appreciate your contribution. This document explains the suggested workflow and code review expectations.
 
-## Where to Report Issues
+## Workflow
 
-- Repo issues (deployment/doc issues): https://github.com/yf-networks/ai-gateway-demo/issues
-- Upstream component issues:
-  - BFE: https://github.com/bfenetworks/bfe/issues
-  - Service Controller: https://github.com/bfenetworks/service-controller/issues
-  - AI Gateway API: https://github.com/yf-networks/ai-gateway-api/issues
+We generally follow a Git branching model similar to:
+http://nvie.com/posts/a-successful-git-branching-model/
 
-## Report Documentation Issues
+Typical steps:
 
-If you encounter any of the following, please report via GitHub Issues:
+1. Fork
 
-- Technical errors: command failures, incorrect parameters
-- Missing content: missing steps or required details
-- Unclear descriptions: ambiguous or hard-to-understand text
-- Broken links: inaccessible external references
+  Our community grows quickly; please submit Pull Requests from your fork.
+  To create a fork, go to the GitHub page and click the
+  ["Fork" button](https://help.github.com/articles/fork-a-repo/).
 
-### How to Submit an Issue
+2. Clone
 
-1. Visit the repository: https://github.com/yf-networks/ai-gateway-demo
-2. Go to the **Issues** tab
-3. Click **New Issue**
-4. Use the title format: `[BUILD-GUIDE] Short issue description`
-5. Include:
-   - The section where the issue appears (e.g., "BFE Build - Image Build")
-   - Detailed description
-   - Full error logs (if applicable)
-   - Your OS and tool versions
+  ```bash
+  git clone https://github.com/<your-github-account>/ai-gateway-demo
+  cd ai-gateway-demo
+  ```
 
-## Submit Improvements
+3. Create a local feature branch
 
-You can contribute via Issue or Pull Request:
+  ```bash
+  git checkout -b my-cool-stuff
+  ```
 
-- Add best practices: optimizations you discovered in practice
-- Add example scenarios: more real-world configuration examples
-- Improve wording: clearer and more concise explanations
-- Add new sections: content you think should be included
+4. Build and test (as applicable)
 
-### How to Submit a Pull Request
+  ```bash
+  make
+  ```
 
-1. Fork the repository to your GitHub account
-2. Clone your fork locally
-3. Create a feature branch: `git checkout -b feature/improve-build-guide`
-4. Edit docs as needed (e.g., `BUILD_GUIDE.md`, `BUILD_GUIDE_CN.md`, `README.md`, `README_CN.md`)
-5. Commit changes: `git commit -s -m "docs: improve build guide"`
-6. Push to your fork: `git push origin feature/improve-build-guide`
-7. Create a Pull Request on GitHub
-8. Describe what you changed and why in the PR
+5. Keep pulling from upstream
 
-## Documentation Principles
+  Pull from the official repo often so you can resolve conflicts early.
 
-- Documentation-First: keep bilingual support in mind
-- Demo-Focused Clarity: keep steps clear and verifiable
-- Production-Ready Warnings: clearly mark production considerations
+  ```bash
+  git remote add upstream https://github.com/yf-networks/ai-gateway-demo
+  git pull upstream main
+  ```
 
-## Contact
+6. Push and open a Pull Request
 
-- Repository: https://github.com/yf-networks/ai-gateway-demo
-- Issue Tracker: https://github.com/yf-networks/ai-gateway-demo/issues
-- Email: liangchuan@yf-networks.com
+  ```bash
+  git push origin my-cool-stuff
+  ```
+
+  Then open a Pull Request:
+  https://help.github.com/articles/creating-a-pull-request/
+
+  If your change fixes an issue, include "Fixes <issue-URL>" in the PR description:
+  https://help.github.com/articles/closing-issues-using-keywords/
+
+7. Delete local and remote branches (optional)
+
+  ```bash
+  git push origin :my-cool-stuff
+  git checkout main
+  git pull upstream main
+  git branch -d my-cool-stuff
+  ```
+
+## Code Review
+
+- Feel free to ping reviewers after CI passes.
+- Please respond to every review comment.
+- Prefer a clean history: avoid too many trivial commits; consider `git commit --amend` when appropriate.
+
+## Coding Standard
+
+### Code Style
+
+Our Go code follows the Go style guide:
+https://github.com/golang/go/wiki/Style
+
+### Unit Tests
+
+Please add relevant unit tests when changing code.
+For Go code, use the standard `testing` package:
+https://golang.org/pkg/testing/
