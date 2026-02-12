@@ -235,6 +235,14 @@ data:
     ExtraFileTaskHeaders    = {"Authorization" = "Token c5QFb-MrlKktJbOid2M3"}
     ExtraFileTaskTimeoutMs  = 1500
     
+    # reloader for mod_ai_token_auth, detail see https://www.bfe-networks.net/en_us/configuration/mod_ai_token_auth/
+    [Reloaders.mod_ai_token_auth]
+    BFEReloadAPI = "/reload/mod_ai_token_auth"
+    ReloadFile = "token_rule.data"
+    CopyFiles = ["token_rule.data", "mod_ai_token_auth.conf"]
+    [[Reloaders.mod_ai_token_auth.NormalFileTasks]]
+    ConfAPI = "/inner-api/v1/configs/mod-api-key"
+    ConfFileName = "token_rule.data"
     
     # reloader for server_data_config files, detail see https://www.bfe-networks.net/en_us/configuration/server_data_conf/host_rule.data/
     [Reloaders.server_data_conf]
