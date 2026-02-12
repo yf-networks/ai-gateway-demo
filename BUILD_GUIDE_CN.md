@@ -410,7 +410,7 @@ make docker-push REGISTRY=<your-registry>
 - `bfe-api-addr`: AI Gateway API 地址（控制面）
 - `bfe-api-token`: API 认证 Token（需从 Dashboard 创建）
 - `namespace`: 监听的 Kubernetes 命名空间（监听哪些命名空间的 Service）
-  - 在本示例中，后端测试服务 whoami 部署在 `default` 命名空间，因此此项填写为：`default`
+  - 在本示例中，后端测试服务（llm-d inference simulator）部署在 `default` 命名空间，因此此项填写为：`default`
   - 说明：控制面/数据面部署在 `ai-gateway-system`，但被发现/同步的后端服务可以在其他命名空间（通过此参数指定）
 
 
@@ -424,14 +424,14 @@ Service Controller 通过监听 Kubernetes Service 的 **labels** 来发现后�
 apiVersion: v1
 kind: Service
 metadata:
-  name: whoami
+  name: <service-name>
   labels:
     bfe-product: AI_product      # 必须：固定值（见下方说明）
 spec:
   ports:
     - name: http                 # 必须：端口必须有命名（name 字段）
-      port: 8080
-      targetPort: 80
+      port: <port>
+      targetPort: <targetPort>
 ```
 
 **注解说明**:
@@ -612,41 +612,41 @@ kubectl apply -k kubernetes/
 
 ### 6. 部署测试服务（验证路由转发）
 
-**whoami 服务说明**:
+**示例后端服务（llm-d inference simulator）说明**:
 
-whoami 是一个轻量级的 HTTP 回显服务，用于验证 BFE 的路由转发功能。它会返回请求的详细信息（主机名、IP、请求头等），非常适合用于测试和调试。
+本仓库提供了一个示例后端服务清单，用于验证 Service 发现与 BFE 路由转发能力。该清单会在 `default` 命名空间部署一个 LLM 推理模拟服务（Deployment: `vllm-llama3-8b-instruct`，Service: `vllm-llama3-8b-instruct-svc`）。
 
-**部署 whoami**:
+**部署示例后端服务**:
 
 ```bash
-kubectl apply -f kubernetes/whoami-deploy.yaml
+kubectl apply -f kubernetes/llm-d-inference-sim-deploy.yaml
 ```
 
 **关键配置说明**:
 
-whoami 服务部署在 `default` 命名空间，其 Service 配置了必需的标签：
+示例后端服务部署在 `default` 命名空间，其 Service 配置了必需的标签：
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: whoami
+  name: vllm-llama3-8b-instruct-svc
   namespace: default
   labels:
     bfe-product: AI_product  # 必须：Service Controller 依赖此标签发现服务
 spec:
   ports:
     - name: http             # 必须：端口必须命名
-      port: 8080
-      targetPort: 80
+      port: 8000
+      targetPort: 8000
   selector:
-    app.kubernetes.io/name: whoami
+    app: vllm-llama3-8b-instruct
 ```
 
 **注意事项**:
-- whoami 部署在 `default` 命名空间，而不是 `ai-gateway-system`
-- 如需使用其他镜像，请直接编辑 `kubernetes/whoami-deploy.yaml` 文件
-- 必须在 Dashboard 中配置转发规则后才能通过 BFE 访问 whoami
+- 示例后端服务部署在 `default` 命名空间，而不是 `ai-gateway-system`
+- 如需替换镜像/模型参数，请直接编辑 `kubernetes/llm-d-inference-sim-deploy.yaml` 文件
+- 必须在 Dashboard 中配置转发规则后才能通过 BFE 访问后端服务
 
 ### 7. 验证部署状态
 
@@ -709,22 +709,22 @@ kubectl get pods -n ai-gateway-system -l app=redis
 - MySQL/Redis 未就绪或连接信息不匹配（使用外部数据库时更常见）
 - 未执行数据库初始化脚本（外部 MySQL 场景）
 
-### 3) Service Controller 未发现/同步 whoami
+### 3) Service Controller 未发现/同步示例后端服务
 
 ```bash
-# whoami 是否有 Endpoints
-kubectl get endpoints whoami -n default
+# Service 是否有 Endpoints
+kubectl get endpoints vllm-llama3-8b-instruct-svc -n default
 
-# whoami Service 是否带有固定标签
-kubectl get svc whoami -n default -o yaml | grep -A3 "labels:"
+# Service 是否带有固定标签
+kubectl get svc vllm-llama3-8b-instruct-svc -n default -o yaml | grep -A3 "labels:"
 
 # Service Controller 日志
 kubectl logs -n ai-gateway-system -l app=service-controller --tail=200
 ```
 
 检查点：
-- whoami 的 Service 必须带 `bfe-product: AI_product`
-- Service Controller 的监听 namespace 必须覆盖 whoami 所在的 `default`（本项目清单默认监听 `default`）
+- 后端 Service 必须带 `bfe-product: AI_product`
+- Service Controller 的监听 namespace 必须覆盖示例后端服务所在的 `default`（本项目清单默认监听 `default`）
 
 ### 4) BFE 访问返回 500
 
@@ -773,6 +773,9 @@ kubectl logs -f -n ai-gateway-system -l app=bfe --all-containers=true --tail=100
 - **AI Gateway API**
   - GitHub: https://github.com/yf-networks/ai-gateway-api
   - Dashboard 前端: https://github.com/yf-networks/ai-gateway-web
+
+- **llm-d inference simulator（示例后端模拟器）**
+  - GitHub: https://github.com/llm-d/llm-d-inference-sim
 
 - **Service Controller**
   - GitHub: https://github.com/bfenetworks/service-controller

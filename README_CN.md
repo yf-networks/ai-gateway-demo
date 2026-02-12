@@ -11,7 +11,7 @@
 - 控制面（ai-gateway-api）负责策略/配置下发接口；
 - 基础依赖（MySQL、Redis）为控制面提供存储与依赖服务；
 - 服务发现（service-controller）负责发现并同步后端服务；
-- 示例服务 whoami 用于验证路由；
+- 示例后端服务（llm-d inference simulator）用于验证路由；
 - 组件间通过 Kubernetes Service/DNS 相互通信，如：
   - ai-gateway-api.ai-gateway-system.svc.cluster.local
   - mysql.ai-gateway-system.svc.cluster.local
@@ -36,7 +36,7 @@
 | `mysql-deploy.yaml` | MySQL Deployment（示例数据库与存储配置） |
 | `redis-deploy.yaml` | Redis Deployment/Service（示例缓存配置） |
 | `service-controller-deploy.yaml` | 服务发现控制器 Deployment 清单 |
-| `whoami-deploy.yaml` | 示例测试服务 whoami 的 Deployment 清单 |
+| `llm-d-inference-sim-deploy.yaml` | 示例后端服务（llm-d inference simulator）清单 |
 
 ## 前提条件
 
@@ -77,10 +77,10 @@ kubectl apply -k kubernetes
 ### 3) 部署测试服务（可选）
 
 ```bash
-kubectl apply -f kubernetes/whoami-deploy.yaml
+kubectl apply -f kubernetes/llm-d-inference-sim-deploy.yaml
 ```
 
-> whoami 部署在 `default` 命名空间；如需替换镜像，请直接修改 `whoami-deploy.yaml`。
+> 示例后端服务部署在 `default` 命名空间；如需替换镜像/模型参数，请直接修改 `llm-d-inference-sim-deploy.yaml`。
 
 ### 4) 快速验证
 
@@ -100,11 +100,11 @@ http://{NodeIP}:30183
 ### 清理部署
 
 ```bash
-kubectl delete -f kubernetes/whoami-deploy.yaml
+kubectl delete -f kubernetes/llm-d-inference-sim-deploy.yaml
 kubectl delete -k kubernetes/
 ```
 
-> 建议先删 whoami 再删 `ai-gateway-system`，避免 finalizers 导致卡住。
+> 建议先删示例后端服务再删 `ai-gateway-system`，避免 finalizers 导致卡住。
 
 
 ## 社区贡献
@@ -116,6 +116,7 @@ kubectl delete -k kubernetes/
 - 构建与部署完整指南： [BUILD_GUIDE_CN.md](./BUILD_GUIDE_CN.md)
 - BFE 项目： https://github.com/bfenetworks/bfe
 - AI Gateway API： https://github.com/yf-networks/ai-gateway-api
+- 示例后端（llm-d inference simulator）： https://github.com/llm-d/llm-d-inference-sim
 - Service Controller： https://github.com/bfenetworks/service-controller
 - Dashboard 前端： https://github.com/yf-networks/ai-gateway-web
 - Kubernetes 文档： https://kubernetes.io/docs/

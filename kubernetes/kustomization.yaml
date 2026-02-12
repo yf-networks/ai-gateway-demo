@@ -40,7 +40,7 @@ resources:
 images:
   - name: ghcr.io/bfenetworks/bfe
     newName: ghcr.nju.edu.cn/bfenetworks/bfe
-    newTag: v1.8.0-debug 
+    newTag: v1.8.1-debug 
 
   - name: ghcr.io/yf-networks/ai-gateway-api
     newName: ghcr.nju.edu.cn/yf-networks/ai-gateway-api

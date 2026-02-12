@@ -11,7 +11,7 @@ This example demonstrates the interaction of several key components in the `ai-g
 - Control plane (ai-gateway-api): provides configuration/policy delivery API
 - Base dependencies (MySQL, Redis): provide storage and dependency services for the control plane
 - Service discovery (service-controller): discovers and syncs backend services
-- Demo service (whoami): used to validate routing
+- Demo backend service (llm-d inference simulator): used to validate routing
 - Components communicate via Kubernetes Service/DNS, for example:
   - ai-gateway-api.ai-gateway-system.svc.cluster.local
   - mysql.ai-gateway-system.svc.cluster.local
@@ -36,7 +36,7 @@ Main files (directory ./kubernetes):
 | `mysql-deploy.yaml` | MySQL Deployment (example database and storage config) |
 | `redis-deploy.yaml` | Redis Deployment/Service (example cache config) |
 | `service-controller-deploy.yaml` | Service discovery controller Deployment manifest |
-| `whoami-deploy.yaml` | whoami demo service Deployment manifest |
+| `llm-d-inference-sim-deploy.yaml` | Demo backend service (llm-d inference simulator) manifest |
 
 ## Prerequisites
 
@@ -77,10 +77,10 @@ This command deploys: bfe (with conf-agent), ai-gateway-api (with Dashboard), my
 ### 3) Deploy Test Service (Optional)
 
 ```bash
-kubectl apply -f kubernetes/whoami-deploy.yaml
+kubectl apply -f kubernetes/llm-d-inference-sim-deploy.yaml
 ```
 
-> whoami is deployed in the `default` namespace; to replace the image, edit `whoami-deploy.yaml` directly.
+> The demo backend service is deployed in the `default` namespace; to replace the image/model args, edit `llm-d-inference-sim-deploy.yaml` directly.
 
 ### 4) Quick Validation
 
@@ -100,11 +100,11 @@ http://{NodeIP}:30183
 ### Cleanup Deployment
 
 ```bash
-kubectl delete -f kubernetes/whoami-deploy.yaml
+kubectl delete -f kubernetes/llm-d-inference-sim-deploy.yaml
 kubectl delete -k kubernetes/
 ```
 
-> Recommended: delete whoami first, then `ai-gateway-system` to avoid finalizers causing hang.
+> Recommended: delete the demo backend service first, then `ai-gateway-system` to avoid finalizers causing hang.
 
 ## Contributing
 
@@ -115,6 +115,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to submit pull requests.
 - Build and Deployment Complete Guide: [BUILD_GUIDE.md](./BUILD_GUIDE.md) / [BUILD_GUIDE_CN.md](./BUILD_GUIDE_CN.md)
 - BFE Project: https://github.com/bfenetworks/bfe
 - AI Gateway API: https://github.com/yf-networks/ai-gateway-api
+- Demo backend (llm-d inference simulator): https://github.com/llm-d/llm-d-inference-sim
 - Service Controller: https://github.com/bfenetworks/service-controller
 - Dashboard Frontend: https://github.com/yf-networks/ai-gateway-web
 - Kubernetes Documentation: https://kubernetes.io/docs/

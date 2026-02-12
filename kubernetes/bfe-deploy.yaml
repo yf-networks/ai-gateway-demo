@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: bfe
-        image: ghcr.io/bfenetworks/bfe:v1.8.0-debug # 替换为实际镜像
+        image: ghcr.io/bfenetworks/bfe:v1.8.1-debug # 替换为实际镜像
         imagePullPolicy: IfNotPresent
         ports:
         - name: http

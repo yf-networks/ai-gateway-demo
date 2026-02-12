@@ -390,7 +390,7 @@ Key args in `examples/service-controller-endpoints.yaml`:
 - `bfe-api-addr`: AI Gateway API address (control plane)
 - `bfe-api-token`: API auth Token (create from Dashboard)
 - `namespace`: which Kubernetes namespace(s) to watch for backend Services
-  - In this demo, the backend test service **whoami** is deployed in the `default` namespace, so set it to: `default`
+  - In this demo, the backend test service (llm-d inference simulator) is deployed in the `default` namespace, so set it to: `default`
   - Control plane/data plane runs in `ai-gateway-system`, but discovered backend Services can live in other namespaces (controlled by this arg)
 
 
@@ -593,20 +593,20 @@ Deployed resources (Namespace: `ai-gateway-system`):
 
 ### 6. Deploy Test Service (Validate Routing)
 
-About **whoami**:
+About the demo backend service (llm-d inference simulator):
 
-whoami is a lightweight HTTP echo service used to validate BFE routing/forwarding. It returns request details (hostname, IP, headers, etc.), which is great for testing.
+This repo provides a demo backend service manifest that runs an LLM inference simulator (Deployment `vllm-llama3-8b-instruct`, Service `vllm-llama3-8b-instruct-svc`). It can be used as a backend to validate Service discovery and BFE routing/forwarding.
 
 Deploy:
 
 ```bash
-kubectl apply -f kubernetes/whoami-deploy.yaml
+kubectl apply -f kubernetes/llm-d-inference-sim-deploy.yaml
 ```
 
 Key notes:
-- whoami is deployed in the `default` namespace (not `ai-gateway-system`).
-- If you want to use a different image, edit `kubernetes/whoami-deploy.yaml`.
-- You must configure forwarding rules in the Dashboard before accessing whoami through BFE.
+- The demo backend service is deployed in the `default` namespace (not `ai-gateway-system`).
+- If you want to use a different image/model args, edit `kubernetes/llm-d-inference-sim-deploy.yaml`.
+- You must configure forwarding rules in the Dashboard before accessing the backend through BFE.
 
 The Service must include required labels and named ports:
 
@@ -614,17 +614,17 @@ The Service must include required labels and named ports:
 apiVersion: v1
 kind: Service
 metadata:
-  name: whoami
+  name: vllm-llama3-8b-instruct-svc
   namespace: default
   labels:
     bfe-product: AI_product  # required: Service Controller uses this to discover
 spec:
   ports:
     - name: http             # required: port must be named
-      port: 8080
-      targetPort: 80
+      port: 8000
+      targetPort: 8000
   selector:
-    app.kubernetes.io/name: whoami
+    app: vllm-llama3-8b-instruct
 ```
 
 ### 7. Validate Deployment
@@ -688,21 +688,21 @@ Common causes:
 - MySQL/Redis is not ready or connection settings are incorrect (more likely when using external DB)
 - DB init script was not applied (external MySQL scenario)
 
-### 3) Service Controller does not discover/sync whoami
+### 3) Service Controller does not discover/sync the demo backend service
 
 ```bash
-# Does whoami have Endpoints?
-kubectl get endpoints whoami -n default
+# Does the Service have Endpoints?
+kubectl get endpoints vllm-llama3-8b-instruct-svc -n default
 
-# Does whoami Service have the required fixed label?
-kubectl get svc whoami -n default -o yaml | grep -A3 "labels:"
+# Does the Service have the required fixed label?
+kubectl get svc vllm-llama3-8b-instruct-svc -n default -o yaml | grep -A3 "labels:"
 
 # Service Controller logs
 kubectl logs -n ai-gateway-system -l app=service-controller --tail=200
 ```
 
 Checkpoints:
-- The whoami Service must include `bfe-product: AI_product`.
+- The backend Service must include `bfe-product: AI_product`.
 - Service Controller’s watched namespace must include `default` (this repo’s demo manifests watch `default`).
 
 ### 4) BFE returns 500
@@ -753,6 +753,9 @@ kubectl logs -f -n ai-gateway-system -l app=bfe --all-containers=true --tail=100
 - **AI Gateway API**
   - GitHub: https://github.com/yf-networks/ai-gateway-api
   - Dashboard frontend: https://github.com/yf-networks/ai-gateway-web
+
+- **llm-d inference simulator (demo backend)**
+  - GitHub: https://github.com/llm-d/llm-d-inference-sim
 
 - **Service Controller**
   - GitHub: https://github.com/bfenetworks/service-controller
