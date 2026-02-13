@@ -14,10 +14,13 @@
 1. **BFE (数据面)** - 负责流量转发与接入控制
    - GitHub: https://github.com/bfenetworks/bfe
    
-2. **AI Gateway API (控制面)** - 负责策略/配置下发接口
+2. **AI Gateway API (控制面 API)** - 负责策略/配置下发接口
    - GitHub: https://github.com/yf-networks/ai-gateway-api
+
+3. **AI Gateway Web (控制面 Dashboard)** - 为控制面提供图形化操作界面 
+   - GitHub: https://github.com/yf-networks/ai-gateway-web
    
-3. **Service Controller** - 负责发现并同步后端服务
+4. **Service Controller** - 负责发现并同步后端服务
    - GitHub: https://github.com/bfenetworks/service-controller
 
 ---
@@ -27,6 +30,7 @@
 - [前置条件](#前置条件)
 - [BFE 编译](#bfe-编译)
 - [AI Gateway API 编译](#ai-gateway-api-编译)
+- [AI Gateway Web 编译](#ai-gateway-web-编译)
 - [Service Controller 编译](#service-controller-编译)
 - [Kubernetes 部署集成](#kubernetes-部署集成)
 - [故障排查](#故障排查)
@@ -324,6 +328,20 @@ docker run -d \
 
 **配置文件说明**:
 - `conf/` 目录包含数据库连接、Redis 配置等
+
+---
+
+## AI Gateway Web 编译
+
+构建 `ai-gateway-api` 镜像时，会自动从 `ai-gateway-web` 的 release 列表中按指定的版本拉取，**通常不需要单独编译**。
+
+### 源码编译
+
+如有需要从源代码构建，请参见 `ai-gateway-web` 项目的编译指南：
+
+**GitHub 仓库**: [https://github.com/yf-networks/ai-gateway-web](https://github.com/yf-networks/ai-gateway-web)
+
+**编译文档**: [BUILD_GUIDE.md](https://github.com/yf-networks/ai-gateway-web/blob/develop/BUILD_GUIDE.md)
 
 ---
 

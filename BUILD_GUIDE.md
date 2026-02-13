@@ -17,7 +17,10 @@ This guide covers building and deploying the following three core components:
 2. **AI Gateway API (Control Plane)** – policy/config management APIs (includes Dashboard)
    - GitHub: https://github.com/yf-networks/ai-gateway-api
 
-3. **Service Controller** – discovers and syncs backend Services into the control plane
+3. **AI Gateway Web (Control Plane Dashboard)** – provides a graphical UI for the control plane
+   - GitHub: https://github.com/yf-networks/ai-gateway-web
+
+4. **Service Controller** – discovers and syncs backend Services into the control plane
    - GitHub: https://github.com/bfenetworks/service-controller
 
 ---
@@ -309,6 +312,20 @@ docker run -d \
 
 Config notes:
 - `conf/` contains DB and Redis connection settings.
+
+---
+
+## Build AI Gateway Web
+
+When building the `ai-gateway-api` image, it automatically pulls the specified version from the `ai-gateway-web` releases, so you typically **do not need to build it separately**.
+
+### Build from Source
+
+If you need to build from source, refer to the build guide in the `ai-gateway-web` repository:
+
+**GitHub Repository**: [https://github.com/yf-networks/ai-gateway-web](https://github.com/yf-networks/ai-gateway-web)
+
+**Build Guide**: [BUILD_GUIDE.md](https://github.com/yf-networks/ai-gateway-web/blob/develop/BUILD_GUIDE.md)
 
 ---
 

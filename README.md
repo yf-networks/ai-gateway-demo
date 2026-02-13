@@ -95,6 +95,10 @@ Access Dashboard (default username/password: admin/admin):
 http://{NodeIP}:30183
 ```
 
+**Dashboard Configuration**
+
+- Please refer to the README in: [ai-gateway-web](https://github.com/yf-networks/ai-gateway-web/blob/develop/README.md)
+
 ## Common Operations
 
 ### Cleanup Deployment

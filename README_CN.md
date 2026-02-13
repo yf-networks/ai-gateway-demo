@@ -95,6 +95,11 @@ kubectl get svc -n ai-gateway-system
 http://{NodeIP}:30183
 ```
 
+**关于 Dashboard 的配置说明**
+
+- 请参见：[ai-gateway-web](https://github.com/yf-networks/ai-gateway-web/blob/develop/README.md) 的 README
+
+
 ## 常见操作
 
 ### 清理部署
