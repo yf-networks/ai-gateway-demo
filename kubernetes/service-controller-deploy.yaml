@@ -61,7 +61,7 @@ spec:
       serviceAccountName: bfe-service-controller
       containers:
         - name: bfe-service-controller
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent 
           image: ghcr.io/bfenetworks/service-controller:latest
           command: [ "/service-controller" ]
           args:

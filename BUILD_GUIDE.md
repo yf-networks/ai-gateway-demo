@@ -43,11 +43,11 @@ Before you start, ensure your machine meets these requirements:
 
 #### Go
 
-- **Required**: Go 1.21+
+- **Required**: Go 1.22+
 - **Verify**:
   ```bash
   go version
-  # Expected: go version go1.21.x ...
+  # Expected: go version go1.22.x ...
   ```
 - **Install**: https://go.dev/dl/
 
