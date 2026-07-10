@@ -2,6 +2,13 @@
 
 # AI Gateway Kubernetes 部署示例
 
+> **本仓库已被 [ai-gateway](https://github.com/yf-networks/ai-gateway) 替代。**
+> 新的 `ai-gateway` 仓库提供 all-in-one Docker 部署方案（`docker compose up -d`），支持数据库自动初始化、Docker 网络 DNS 和测试模拟器 — 无需 Kubernetes。
+>
+> 最新版本及容器部署指南见 👉 [README.md](https://github.com/yf-networks/ai-gateway/blob/main/README.md)
+>
+> 本仓库的 K8s 部署清单已迁移至 `ai-gateway/kubernetes/`。
+
 ## 概述
 
 ![BFE Kubernetes](./.images/ai-gateway-k8s.png)

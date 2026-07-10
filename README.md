@@ -2,6 +2,13 @@ English | [简体中文](./README_CN.md)
 
 # AI Gateway Kubernetes Deployment Example
 
+> **This repository has been superseded by [ai-gateway](https://github.com/yf-networks/ai-gateway).**
+> The new `ai-gateway` repository provides an all-in-one Docker deployment (`docker compose up -d`), with automatic database initialization, Docker network DNS, and a test simulator — no Kubernetes required.
+>
+> For the latest version and container deployment guide, see 👉 [README.md](https://github.com/yf-networks/ai-gateway/blob/main/README.md)
+>
+> The K8s manifests in this repository have been preserved and migrated to `ai-gateway/kubernetes/`.
+
 ## Overview
 
 ![BFE Kubernetes](./.images/ai-gateway-k8s.png)
